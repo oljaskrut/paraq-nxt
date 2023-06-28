@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { ClerkProvider } from "@clerk/nextjs"
 import { dark } from "@clerk/themes"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Analytics } from "@vercel/analytics/react"
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -49,6 +50,7 @@ export default function RootLayout({
                 {modal}
               </div>
               <Toaster />
+              <Analytics />
             </ThemeProvider>
           </QueryProvider>
         </body>
