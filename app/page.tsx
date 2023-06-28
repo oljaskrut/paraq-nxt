@@ -1,6 +1,6 @@
 import XImage from "@/components/x-image"
-import { formatDate } from "@/lib/dayjs"
 import { prisma } from "@/lib/prisma"
+import { formatTimeToNow } from "@/lib/utils"
 import Link from "next/link"
 
 export default async function Home() {
@@ -36,7 +36,7 @@ export default async function Home() {
             />
             <div className="p-4">
               <p className="text-sm text-muted-foreground text-justify w-full">
-                {formatDate(post.date)} {post.source}
+                {formatTimeToNow(post.date)} {post.source}
               </p>
               <h2 className="text-2xl font-extrabold tracking-tighter leading-6 my-2">
                 {post.head}
