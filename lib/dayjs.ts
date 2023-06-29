@@ -19,3 +19,8 @@ export function formatDate(date: Date) {
   }
   return d.format("DD.MM HH:mm")
 }
+
+export function formatSimple(date: Date) {
+  const d = dayjs(date).subtract(6, "hours")
+  return d.format("DD.MM HH:mm")
+}

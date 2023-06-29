@@ -59,7 +59,7 @@ export default function RootLayout({
               <div className="relative flex min-h-screen flex-col">
                 <SiteHeader />
 
-                <div className="container max-w-6xl mx-auto h-full pt-12">
+                <div className="container max-w-7xl mx-auto h-full pt-12">
                   {children}
                 </div>
                 {modal}

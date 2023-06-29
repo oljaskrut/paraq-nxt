@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, Link2, MoreHorizontal } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import {
@@ -12,8 +12,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { formatTimeToNow } from "@/lib/utils"
 import XImage from "@/components/x-image"
+import { formatSimple } from "@/lib/dayjs"
+import Link from "next/link"
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Payment = {
@@ -22,6 +23,7 @@ export type Payment = {
   body: string
   image: string
   date: Date
+  link: string
 }
 
 export const columns: ColumnDef<Payment>[] = [
@@ -74,12 +76,16 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       const body = row.getValue("body") as string
       const formatted = body.slice(0, 80) + "..."
-      return <div className="text-left font-medium">{formatted}</div>
+      return (
+        <div className="text-left font-medium">
+          {body !== "" ? "true" : "false"}
+        </div>
+      )
     },
   },
   {
     accessorKey: "image",
-    header: () => <div className="text-right">Image</div>,
+    header: () => <div className="text-center">Image</div>,
     cell: ({ row }) => {
       const image = row.getValue("image") as string
       return (
@@ -91,11 +97,28 @@ export const columns: ColumnDef<Payment>[] = [
   },
   {
     accessorKey: "date",
-    header: () => <div className="text-right">Date</div>,
+    header: () => <div className="text-center">Date</div>,
     cell: ({ row }) => {
       const date = row.getValue("date") as Date
-      const formatted = formatTimeToNow(date)
-      return <div className="text-right font-medium">{formatted}</div>
+      const formatted = formatSimple(date)
+      return <div className="text-left">{formatted}</div>
+    },
+  },
+  {
+    accessorKey: "source",
+    header: () => <div className="text-center">Source</div>,
+  },
+  {
+    accessorKey: "link",
+    header: () => <div className="text-center">Link</div>,
+    cell: ({ row }) => {
+      const link = row.getValue("link") as string
+
+      return (
+        <Link href={link}>
+          <Link2 className="w-4 h-4" />
+        </Link>
+      )
     },
   },
   {
