@@ -132,7 +132,7 @@ export const columns: ColumnDef<Payment>[] = [
 
       const { mutate: addFeatured } = useMutation({
         mutationFn: async () => {
-          await fetch(absoluteUrl("/api/featured/add"), {
+          const res = await fetch(absoluteUrl("/api/featured/add"), {
             method: "POST",
             body: JSON.stringify({ ...item, show: true }),
           })

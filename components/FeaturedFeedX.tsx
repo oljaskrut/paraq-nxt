@@ -25,7 +25,7 @@ function Wrapper({
 }) {
   const { mutate: toggleShow } = useMutation({
     mutationFn: async () => {
-      await fetch(absoluteUrl("/api/featured/show"), {
+      const res = await fetch(absoluteUrl("/api/featured/show"), {
         method: "POST",
         body: JSON.stringify({ id: post.id, show: !post.show }),
       })
@@ -37,7 +37,7 @@ function Wrapper({
 
   const { mutate: deleteFeatured } = useMutation({
     mutationFn: async () => {
-      await fetch(absoluteUrl("/api/featured/delete"), {
+      const res = await fetch(absoluteUrl("/api/featured/delete"), {
         method: "POST",
         body: JSON.stringify({ id: post.id }),
       })
