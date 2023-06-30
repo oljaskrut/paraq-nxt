@@ -8,6 +8,10 @@ export const siteConfig = {
       title: "Dash",
       href: "/dashboard",
     },
+    {
+      title: "FF",
+      href: "/featured",
+    },
   ],
   links: {
     instagram: "https://instagram.com/bloombergbusiness",

@@ -15,6 +15,9 @@ import {
 import XImage from "@/components/x-image"
 import { formatSimple } from "@/lib/dayjs"
 import Link from "next/link"
+import { toast } from "@/hooks/use-toast"
+import { useMutation } from "@tanstack/react-query"
+import { absoluteUrl } from "@/lib/utils"
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Payment = {
@@ -24,6 +27,7 @@ export type Payment = {
   image: string
   date: Date
   link: string
+  source: string
 }
 
 export const columns: ColumnDef<Payment>[] = [
@@ -124,7 +128,19 @@ export const columns: ColumnDef<Payment>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const payment = row.original
+      const item = row.original
+
+      const { mutate: addFeatured } = useMutation({
+        mutationFn: async () => {
+          await fetch(absoluteUrl("/api/featured/add"), {
+            method: "POST",
+            body: JSON.stringify({ ...item, show: true }),
+          })
+        },
+        onError: () =>
+          toast({ title: "Error: not added", variant: "destructive" }),
+        onSuccess: () => toast({ title: "Added to featured" }),
+      })
 
       return (
         <DropdownMenu>
@@ -136,14 +152,12 @@ export const columns: ColumnDef<Payment>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
+            <DropdownMenuItem onClick={() => addFeatured()}>
+              Add to Featured
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            {/* <DropdownMenuSeparator /> */}
+            {/* <DropdownMenuItem>View customer</DropdownMenuItem> */}
+            {/* <DropdownMenuItem>View payment details</DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       )

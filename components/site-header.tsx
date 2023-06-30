@@ -4,6 +4,7 @@ import { siteConfig } from "@/config/site"
 import { Icons } from "@/components/icons"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { UserButton } from "@clerk/nextjs"
+import { Button } from "./ui/button"
 
 export function SiteHeader() {
   const { userId } = auth()
@@ -35,7 +36,13 @@ export function SiteHeader() {
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-1">
             <ThemeToggle />
-            {userId ? <UserButton afterSignOutUrl="/" /> : <SignInButton />}
+            {userId ? (
+              <UserButton afterSignOutUrl="/" />
+            ) : (
+              <Button>
+                <SignInButton mode="modal" />
+              </Button>
+            )}
           </nav>
         </div>
       </div>

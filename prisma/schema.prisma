@@ -20,3 +20,16 @@ model Post {
   source String
   date   DateTime
 }
+
+model FeaturedPost {
+  id        String   @id @default(cuid())
+  head      String
+  body      String
+  image     String
+  link      String   @unique
+  source    String
+  date      DateTime
+  show      Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
