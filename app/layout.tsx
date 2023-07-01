@@ -65,7 +65,7 @@ export default function RootLayout({
                 {modal}
               </div>
               <Toaster />
-              <Analytics />
+              {process.env.NODE_ENV === "production" && <Analytics />}
             </ThemeProvider>
           </QueryProvider>
         </body>

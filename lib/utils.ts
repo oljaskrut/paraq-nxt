@@ -60,3 +60,8 @@ export function absoluteUrl(path: string) {
     ? path
     : `${process.env.NEXT_PUBLIC_APP_URL}${path}`
 }
+
+export const fetcher = <T>(
+  input: RequestInfo | URL,
+  init?: RequestInit | undefined,
+): Promise<T> => fetch(input, init).then((res) => res.json())

@@ -17,7 +17,7 @@ import { formatSimple } from "@/lib/dayjs"
 import Link from "next/link"
 import { toast } from "@/hooks/use-toast"
 import { useMutation } from "@tanstack/react-query"
-import { absoluteUrl } from "@/lib/utils"
+import { absoluteUrl, fetcher } from "@/lib/utils"
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Payment = {
@@ -132,14 +132,14 @@ export const columns: ColumnDef<Payment>[] = [
 
       const { mutate: addFeatured } = useMutation({
         mutationFn: async () => {
-          const res = await fetch(absoluteUrl("/api/featured/add"), {
+          return await fetcher("/api/featured", {
             method: "POST",
             body: JSON.stringify({ ...item, show: true }),
           })
         },
         onError: () =>
           toast({ title: "Error: not added", variant: "destructive" }),
-        onSuccess: () => toast({ title: "Added to featured" }),
+        onSuccess: () => toast({ title: "Added: " + item.head.slice(0, 32) }),
       })
 
       return (

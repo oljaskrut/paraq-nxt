@@ -3,6 +3,7 @@
 import { FeaturedPost } from "@prisma/client"
 import XImage from "@/components/x-image"
 import { formatTime } from "@/lib/dayjs"
+import useSWR from "swr"
 
 import {
   ContextMenu,
@@ -10,9 +11,8 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu"
-import { useMutation } from "@tanstack/react-query"
 import { toast } from "@/hooks/use-toast"
-import { absoluteUrl } from "@/lib/utils"
+import { fetcher } from "@/lib/utils"
 
 function Wrapper({
   post,
@@ -23,29 +23,52 @@ function Wrapper({
   children: React.ReactNode
   className: string
 }) {
-  const { mutate: toggleShow } = useMutation({
-    mutationFn: async () => {
-      const res = await fetch(absoluteUrl("/api/featured/show"), {
-        method: "POST",
-        body: JSON.stringify({ id: post.id, show: !post.show }),
-      })
-    },
-    onError: () =>
-      toast({ title: "Error: not toggle", variant: "destructive" }),
-    onSuccess: () => toast({ title: "Toggled" }),
-  })
+  const { data, mutate } = useSWR<FeaturedPost[]>("/api/featured")
 
-  const { mutate: deleteFeatured } = useMutation({
-    mutationFn: async () => {
-      const res = await fetch(absoluteUrl("/api/featured/delete"), {
-        method: "POST",
-        body: JSON.stringify({ id: post.id }),
+  async function toggleS() {
+    const item = (await fetcher("/api/featured", {
+      method: "PATCH",
+      body: JSON.stringify({ id: post.id, show: !post.show }),
+    })) as FeaturedPost
+    return data?.map((el) => (el.id === item.id ? item : el))
+  }
+  async function deleteF() {
+    const item = (await fetcher("/api/featured", {
+      method: "PUT",
+      body: JSON.stringify({ id: post.id }),
+    })) as FeaturedPost
+    return data?.filter((el) => el.id !== item.id)
+  }
+
+  async function toggleShow() {
+    try {
+      await mutate(toggleS, {
+        optimisticData: data?.map((el) =>
+          el.id === post.id ? { ...el, show: !post.show } : el,
+        ),
+        rollbackOnError: true,
+        populateCache: true,
+        revalidate: false,
       })
-    },
-    onError: () =>
-      toast({ title: "Error: not deleted", variant: "destructive" }),
-    onSuccess: () => toast({ title: "Deleted" }),
-  })
+      toast({ title: "Toggled" })
+    } catch (e) {
+      toast({ title: "Error: not toggle", variant: "destructive" })
+    }
+  }
+
+  async function deleteFeatured() {
+    try {
+      await mutate(deleteF, {
+        optimisticData: data?.filter((el) => el.id !== post.id),
+        rollbackOnError: true,
+        populateCache: true,
+        revalidate: false,
+      })
+      toast({ title: "Deleted" })
+    } catch (e) {
+      toast({ title: "Error: not deleted", variant: "destructive" })
+    }
+  }
 
   return (
     <ContextMenu>
@@ -163,8 +186,12 @@ function CardHalfT(post: FeaturedPost) {
 }
 
 export default function FeaturedFeedX({ posts }: { posts: FeaturedPost[] }) {
-  const showed = posts.filter((el) => el.show)
-  const unshowed = posts.filter((el) => !el.show)
+  const { data } = useSWR<FeaturedPost[]>("/api/featured", fetcher, {
+    fallbackData: posts,
+  })
+
+  const showed = data?.filter((el) => el.show) ?? []
+  const unshowed = data?.filter((el) => !el.show) ?? []
 
   return (
     <>
@@ -172,14 +199,18 @@ export default function FeaturedFeedX({ posts }: { posts: FeaturedPost[] }) {
         <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl mb-2">
           Featured
         </h1>
+
         <CardFull {...showed[0]} />
         <div className="grid grid-cols-2">
-          {showed.slice(1, 3).map((el) => (
-            <CardHalfL {...el} />
-          ))}
+          {data!
+            .filter((el) => el.show)
+            .slice(1, 3)
+            .map((el: any) => (
+              <CardHalfL {...el} />
+            ))}
         </div>
         <div className="grid grid-cols-2">
-          {showed.slice(3, 5).map((el) => (
+          {showed.slice(3, 5).map((el: any) => (
             <CardHalfR {...el} />
           ))}
         </div>
