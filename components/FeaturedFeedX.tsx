@@ -28,7 +28,7 @@ function Wrapper({
   async function toggleS() {
     const item = (await fetcher("/api/featured", {
       method: "PATCH",
-      body: JSON.stringify({ id: post.id, show: !post.show }),
+      body: JSON.stringify({ id: post.id, hidden: !post.hidden }),
     })) as FeaturedPost
     return data?.map((el) => (el.id === item.id ? item : el))
   }
@@ -44,7 +44,7 @@ function Wrapper({
     try {
       await mutate(toggleS, {
         optimisticData: data?.map((el) =>
-          el.id === post.id ? { ...el, show: !post.show } : el,
+          el.id === post.id ? { ...el, hidden: !post.hidden } : el,
         ),
         rollbackOnError: true,
         populateCache: true,
@@ -75,7 +75,7 @@ function Wrapper({
       <ContextMenuTrigger className={className}>{children}</ContextMenuTrigger>
       <ContextMenuContent>
         <ContextMenuItem onClick={() => toggleShow()}>
-          {post.show ? "Hide" : "Show"}
+          {post.hidden ? "Show" : "Hide"}
         </ContextMenuItem>
         <ContextMenuItem onClick={() => deleteFeatured()}>
           Delete
@@ -190,8 +190,8 @@ export default function FeaturedFeedX({ posts }: { posts: FeaturedPost[] }) {
     fallbackData: posts,
   })
 
-  const showed = data?.filter((el) => el.show) ?? []
-  const unshowed = data?.filter((el) => !el.show) ?? []
+  const showed = data?.filter((el) => !el.hidden) ?? []
+  const unshowed = data?.filter((el) => el.hidden) ?? []
 
   return (
     <>
@@ -203,7 +203,7 @@ export default function FeaturedFeedX({ posts }: { posts: FeaturedPost[] }) {
         <CardFull {...showed[0]} />
         <div className="grid grid-cols-2">
           {data!
-            .filter((el) => el.show)
+            .filter((el) => !el.hidden)
             .slice(1, 3)
             .map((el: any) => (
               <CardHalfL {...el} />

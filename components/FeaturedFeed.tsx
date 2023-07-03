@@ -1,9 +1,9 @@
-import { Post } from "@prisma/client"
+import { FeaturedPost } from "@prisma/client"
 import XImage from "@/components/x-image"
 import Link from "next/link"
 import { formatTime } from "@/lib/dayjs"
 
-function CardFull(post: Post) {
+function CardFull(post: FeaturedPost) {
   return (
     <Link
       key={post.id}
@@ -32,7 +32,7 @@ function CardFull(post: Post) {
   )
 }
 
-function CardHalfL(post: Post) {
+function CardHalfL(post: FeaturedPost) {
   return (
     <Link
       key={post.id}
@@ -57,7 +57,7 @@ function CardHalfL(post: Post) {
   )
 }
 
-function CardHalfR(post: Post) {
+function CardHalfR(post: FeaturedPost) {
   return (
     <Link
       key={post.id}
@@ -82,20 +82,22 @@ function CardHalfR(post: Post) {
   )
 }
 
-export default function FeaturedFeed({ posts }: { posts: Post[] }) {
-  return (
-    <>
-      <CardFull {...posts[0]} />
-      <div className="grid grid-cols-2">
-        {posts.slice(1, 3).map((el) => (
-          <CardHalfL {...el} />
-        ))}
-      </div>
-      <div className="grid grid-cols-2">
-        {posts.slice(3, 5).map((el) => (
-          <CardHalfR {...el} />
-        ))}
-      </div>
-    </>
-  )
+export default function FeaturedFeed({ posts }: { posts: FeaturedPost[] }) {
+  if (posts.length !== 0)
+    return (
+      <>
+        <CardFull {...posts[0]} />
+        <div className="grid grid-cols-2">
+          {posts.slice(1, 3).map((el) => (
+            <CardHalfL {...el} />
+          ))}
+        </div>
+        <div className="grid grid-cols-2">
+          {posts.slice(3, 5).map((el) => (
+            <CardHalfR {...el} />
+          ))}
+        </div>
+      </>
+    )
+  return null
 }

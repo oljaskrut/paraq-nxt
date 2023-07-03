@@ -13,13 +13,14 @@ export async function GET() {
   }
 }
 export async function POST(request: Request) {
-  const body = await request.json()
+  const data = await request.json()
   try {
     const post = await prisma.featuredPost.create({
-      data: body,
+      data,
     })
     return NextResponse.json(post)
   } catch (e) {
+    console.log(e)
     return NextResponse.error()
   }
 }
@@ -31,7 +32,7 @@ export async function PATCH(request: Request) {
         id: body.id,
       },
       data: {
-        show: body.show,
+        hidden: body.hidden,
       },
     })
     return NextResponse.json(post)

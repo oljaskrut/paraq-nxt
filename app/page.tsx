@@ -13,7 +13,18 @@ export default async function Home() {
     take: 5,
     orderBy: { date: "desc" },
     where: {
-      show: true,
+      OR: [
+        {
+          hidden: {
+            equals: null,
+          },
+        },
+        {
+          hidden: {
+            equals: false,
+          },
+        },
+      ],
     },
   })
 
