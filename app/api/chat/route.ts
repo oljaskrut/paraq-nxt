@@ -2,7 +2,6 @@
 import { Configuration, OpenAIApi } from "openai-edge"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import { env } from "@/env.mjs"
-import { bigQ } from "@/lib/ai"
 
 // Create an OpenAI API client (that's edge friendly!)
 const config = new Configuration({
@@ -11,6 +10,7 @@ const config = new Configuration({
 const openai = new OpenAIApi(config)
 
 // IMPORTANT! Set the runtime to edge
+export const runtime = "edge"
 
 export async function POST(req: Request) {
   // Extract the `prompt` from the body of the request
