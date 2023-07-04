@@ -1,72 +1,74 @@
-// import { Configuration, OpenAIApi } from "openai"
-// const configuration = new Configuration({
-//   apiKey: process.env.OPENAI_API_KEY,
-// })
-// const openai = new OpenAIApi(configuration)
+import { env } from "@/env.mjs"
 
-// export async function embed(body: string) {
-//   try {
-//     if (body === "") return []
+import { Configuration, OpenAIApi } from "openai"
+const configuration = new Configuration({
+  apiKey: env.OPENAI_API_KEY,
+})
+const openai = new OpenAIApi(configuration)
 
-//     const { data } = await openai.createEmbedding({
-//       model: "text-embedding-ada-002",
-//       input: body,
-//     })
+export async function embed(body: string) {
+  try {
+    if (body === "") return []
 
-//     console.log("m$", ((data.usage?.prompt_tokens ?? 0) * 0.0001).toFixed(2))
+    const { data } = await openai.createEmbedding({
+      model: "text-embedding-ada-002",
+      input: body,
+    })
 
-//     return data.data[0].embedding
-//   } catch (error: any) {
-//     if (error.response) {
-//       console.log(error.response.status)
-//       console.log(error.response.data)
-//     } else {
-//       console.log(error.message)
-//     }
-//     return []
-//   }
-// }
+    console.log("m$", ((data.usage?.prompt_tokens ?? 0) * 0.0001).toFixed(2))
 
-// import { PineconeClient } from "@pinecone-database/pinecone"
-// import { prisma } from "./prisma"
+    return data.data[0].embedding
+  } catch (error: any) {
+    if (error.response) {
+      console.log(error.response.status)
+      console.log(error.response.data)
+    } else {
+      console.log(error.message)
+    }
+    return []
+  }
+}
 
-// const pinecone = new PineconeClient()
-// const initConfig = {
-//   environment: "us-west1-gcp-free",
-//   apiKey: process.env.PINECONE_API_KEY!,
-// }
+import { PineconeClient } from "@pinecone-database/pinecone"
+import { prisma } from "./prisma"
 
-// export async function query(text: string) {
-//   try {
-//     await pinecone.init(initConfig)
-//     const index = pinecone.Index("paraq")
+const pinecone = new PineconeClient()
+const initConfig = {
+  environment: "us-west1-gcp-free",
+  apiKey: env.PINECONE_API_KEY,
+}
 
-//     const vector = await embed(text)
+export async function query(text: string, topK = 5) {
+  try {
+    await pinecone.init(initConfig)
+    const index = pinecone.Index("paraq")
 
-//     const queryRequest = {
-//       topK: 5,
-//       vector,
-//     }
+    const vector = await embed(text)
 
-//     const res = await index.query({ queryRequest })
+    const queryRequest = {
+      topK,
+      vector,
+    }
 
-//     return res.matches?.map(({ id, score }) => ({ id, score })) ?? []
-//   } catch (e) {
-//     console.log(e)
-//     return []
-//   }
-// }
+    const res = await index.query({ queryRequest })
 
-// export async function bigQ(input: string) {
-//   const data = await query(input)
-//   const posts = await prisma.post.findMany({
-//     where: { hash: { in: data.map((el) => el.id) } },
-//   })
+    return res.matches?.map(({ id, score }) => ({ id, score })) ?? []
+  } catch (e) {
+    console.log(e)
+    return []
+  }
+}
 
-//   const rat = data.map(({ id, score }) => ({
-//     score,
-//     ...posts.find((l) => l.hash === id),
-//   }))
+export async function bigQ(input: string, take = 5) {
+  const data = await query(input, take)
+  const posts = await prisma.post.findMany({
+    where: { hash: { in: data.map((el) => el.id) } },
+  })
 
-//   return rat
-// }
+  const rat = data.map(({ id, score }) => ({
+    score,
+    ...posts.find((l) => l.hash === id),
+  }))
+
+  return rat
+}

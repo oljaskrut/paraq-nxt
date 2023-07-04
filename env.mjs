@@ -6,6 +6,8 @@ export const env = createEnv({
     NODE_ENV: z.enum(["development", "test", "production"]),
     DATABASE_URL: z.string().url(),
     CLERK_SECRET_KEY: z.string().min(1),
+    OPENAI_API_KEY: z.string().min(1),
+    PINECONE_API_KEY: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
@@ -16,5 +18,7 @@ export const env = createEnv({
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    PINECONE_API_KEY: process.env.PINECONE_API_KEY,
   },
 })
