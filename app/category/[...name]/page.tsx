@@ -21,6 +21,7 @@ export default async function Page({ params }: { params: { name: string[] } }) {
         date: "desc",
       },
     },
+    take: 20,
   })
 
   if (posts.length === 0) return notFound()

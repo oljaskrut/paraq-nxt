@@ -6,6 +6,76 @@ const configuration = new Configuration({
 })
 const openai = new OpenAIApi(configuration)
 
+// export async function summarize(body: string) {
+//   try {
+//     if (body === "") return ""
+
+//     const { data } = await openai.createChatCompletion({
+//       model: "gpt-3.5-turbo",
+//       messages: [
+//         {
+//           role: "system",
+//           content:
+//             "Summarize into 30 words text of news articles provided by user, in russian",
+//         },
+//         { role: "user", content: body.slice(0, 2500) },
+//       ],
+//     })
+
+//     console.log(
+//       "m$",
+//       (
+//         (data.usage?.prompt_tokens ?? 0) * 0.0015 +
+//         (data.usage?.completion_tokens ?? 0) * 0.002
+//       ).toFixed(2),
+//     )
+
+//     return data.choices[0].message?.content ?? ""
+//   } catch (error: any) {
+//     if (error.response) {
+//       console.log(error.response.status)
+//       console.log(error.response.data)
+//     } else {
+//       console.log(error.message)
+//     }
+//     return ""
+//   }
+// }
+
+export async function answer(question: string, context: any) {
+  try {
+    if (question === "") return ["", 0]
+
+    const { data } = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are journalist, given news articles with simillar embeddings you have to answer question using articles if relevant, in russian. When answering mention source,time,date,location. Try to give latest info, if date not specified. Articles in JSON format: " +
+            JSON.stringify(context),
+        },
+        { role: "user", content: question },
+      ],
+    })
+
+    const cost = (
+      (data.usage?.prompt_tokens ?? 0) * 0.0015 +
+      (data.usage?.completion_tokens ?? 0) * 0.002
+    ).toFixed(2)
+
+    return [data.choices[0].message?.content ?? "", cost]
+  } catch (error: any) {
+    if (error.response) {
+      console.log(error.response.status)
+      console.log(error.response.data)
+    } else {
+      console.log(error.message)
+    }
+    return ["", 0]
+  }
+}
+
 export async function embed(body: string) {
   try {
     if (body === "") return []
@@ -63,6 +133,7 @@ export async function bigQ(input: string, take = 5) {
   const data = await query(input, take)
   const posts = await prisma.post.findMany({
     where: { hash: { in: data.map((el) => el.id) } },
+    orderBy: { date: "desc" },
   })
 
   const rat = data.map(({ id, score }) => ({
