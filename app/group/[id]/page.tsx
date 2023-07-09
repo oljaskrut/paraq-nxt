@@ -11,7 +11,11 @@ export default async function Page({ params }: { params: { id: string } }) {
       id: params.id,
     },
     include: {
-      set: true,
+      set: {
+        orderBy: {
+          date: "desc",
+        },
+      },
     },
   })
 
