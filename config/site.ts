@@ -5,12 +5,8 @@ export const siteConfig = {
   description: "Beautifully designed all-in-one news platform",
   mainNav: [
     {
-      title: "Dash",
-      href: "/dashboard",
-    },
-    {
-      title: "FF",
-      href: "/featured",
+      title: "Categories",
+      href: "/category",
     },
   ],
   links: {
