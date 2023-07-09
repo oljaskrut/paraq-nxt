@@ -134,7 +134,7 @@ export const columns: ColumnDef<Payment>[] = [
         mutationFn: async () => {
           return await fetcher("/api/featured", {
             method: "POST",
-            body: JSON.stringify({ ...item }),
+            body: JSON.stringify({ id: item.id }),
           })
         },
         onError: () =>

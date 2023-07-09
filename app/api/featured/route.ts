@@ -4,7 +4,10 @@ export async function GET() {
   try {
     const posts = await prisma.featuredPost.findMany({
       orderBy: {
-        date: "desc",
+        updatedAt: "desc",
+      },
+      include: {
+        post: true,
       },
     })
     return NextResponse.json(posts)
@@ -13,10 +16,17 @@ export async function GET() {
   }
 }
 export async function POST(request: Request) {
-  const data = await request.json()
+  const { id } = await request.json()
   try {
     const post = await prisma.featuredPost.create({
-      data,
+      data: {
+        post: {
+          connect: {
+            id,
+          },
+        },
+        hidden: true,
+      },
     })
     return NextResponse.json(post)
   } catch (e) {
@@ -25,14 +35,17 @@ export async function POST(request: Request) {
   }
 }
 export async function PATCH(request: Request) {
-  const body = await request.json()
+  const { id, hidden } = await request.json()
   try {
     const post = await prisma.featuredPost.update({
       where: {
-        id: body.id,
+        id,
       },
       data: {
-        hidden: body.hidden,
+        hidden,
+      },
+      include: {
+        post: true,
       },
     })
     return NextResponse.json(post)
@@ -42,11 +55,11 @@ export async function PATCH(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const body = await request.json()
+  const { id } = await request.json()
   try {
     const post = await prisma.featuredPost.delete({
       where: {
-        id: body.id,
+        id,
       },
     })
     return NextResponse.json(post)

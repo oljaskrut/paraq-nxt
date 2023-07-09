@@ -1,9 +1,10 @@
-import { FeaturedPost } from "@prisma/client"
+import { IFeaturedPost } from "@/lib/types"
 import XImage from "@/components/x-image"
 import Link from "next/link"
 import { formatTime } from "@/lib/dayjs"
+import { Post } from "@prisma/client"
 
-function CardFull(post: FeaturedPost) {
+function CardFull(post: Post) {
   return (
     <Link
       key={post.id}
@@ -32,7 +33,7 @@ function CardFull(post: FeaturedPost) {
   )
 }
 
-function CardHalfL(post: FeaturedPost) {
+function CardHalfL(post: Post) {
   return (
     <Link
       key={post.id}
@@ -57,7 +58,7 @@ function CardHalfL(post: FeaturedPost) {
   )
 }
 
-function CardHalfR(post: FeaturedPost) {
+function CardHalfR(post: Post) {
   return (
     <Link
       key={post.id}
@@ -82,19 +83,19 @@ function CardHalfR(post: FeaturedPost) {
   )
 }
 
-export default function FeaturedFeed({ posts }: { posts: FeaturedPost[] }) {
+export default function FeaturedFeed({ posts }: { posts: IFeaturedPost[] }) {
   if (posts.length !== 0)
     return (
       <>
-        <CardFull {...posts[0]} />
+        <CardFull {...posts[0].post} />
         <div className="grid grid-cols-2">
-          {posts.slice(1, 3).map((el) => (
-            <CardHalfL {...el} />
+          {posts.slice(1, 3).map(({ post }) => (
+            <CardHalfL {...post} />
           ))}
         </div>
         <div className="grid grid-cols-2">
-          {posts.slice(3, 5).map((el) => (
-            <CardHalfR {...el} />
+          {posts.slice(3, 5).map(({ post }) => (
+            <CardHalfR {...post} />
           ))}
         </div>
       </>

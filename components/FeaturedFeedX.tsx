@@ -1,6 +1,5 @@
 "use client"
 
-import { FeaturedPost } from "@prisma/client"
 import XImage from "@/components/x-image"
 import { formatTime } from "@/lib/dayjs"
 import useSWR from "swr"
@@ -13,30 +12,33 @@ import {
 } from "@/components/ui/context-menu"
 import { toast } from "@/hooks/use-toast"
 import { fetcher } from "@/lib/utils"
+import { IFeaturedPost } from "@/lib/types"
 
 function Wrapper({
-  post,
+  featuredPost,
   children,
   className,
 }: {
-  post: FeaturedPost
+  featuredPost: IFeaturedPost
   children: React.ReactNode
   className: string
 }) {
-  const { data, mutate } = useSWR<FeaturedPost[]>("/api/featured")
+  const { id, hidden } = featuredPost
+
+  const { data, mutate } = useSWR<IFeaturedPost[]>("/api/featured")
 
   async function toggleS() {
     const item = (await fetcher("/api/featured", {
       method: "PATCH",
-      body: JSON.stringify({ id: post.id, hidden: !post.hidden }),
-    })) as FeaturedPost
+      body: JSON.stringify({ id, hidden: !hidden }),
+    })) as IFeaturedPost
     return data?.map((el) => (el.id === item.id ? item : el))
   }
   async function deleteF() {
     const item = (await fetcher("/api/featured", {
       method: "PUT",
-      body: JSON.stringify({ id: post.id }),
-    })) as FeaturedPost
+      body: JSON.stringify({ id }),
+    })) as IFeaturedPost
     return data?.filter((el) => el.id !== item.id)
   }
 
@@ -44,7 +46,7 @@ function Wrapper({
     try {
       await mutate(toggleS, {
         optimisticData: data?.map((el) =>
-          el.id === post.id ? { ...el, hidden: !post.hidden } : el,
+          el.id === id ? { ...el, hidden: !hidden } : el,
         ),
         rollbackOnError: true,
         populateCache: true,
@@ -59,7 +61,7 @@ function Wrapper({
   async function deleteFeatured() {
     try {
       await mutate(deleteF, {
-        optimisticData: data?.filter((el) => el.id !== post.id),
+        optimisticData: data?.filter((el) => el.id !== id),
         rollbackOnError: true,
         populateCache: true,
         revalidate: false,
@@ -75,7 +77,7 @@ function Wrapper({
       <ContextMenuTrigger className={className}>{children}</ContextMenuTrigger>
       <ContextMenuContent>
         <ContextMenuItem onClick={() => toggleShow()}>
-          {post.hidden ? "Show" : "Hide"}
+          {hidden ? "Show" : "Hide"}
         </ContextMenuItem>
         <ContextMenuItem onClick={() => deleteFeatured()}>
           Delete
@@ -85,10 +87,13 @@ function Wrapper({
   )
 }
 
-function CardFull(post: FeaturedPost) {
+function CardFull(featuredPost: IFeaturedPost) {
+  const { post } = featuredPost
+  if (!post) return null
+
   return (
     <Wrapper
-      post={post}
+      featuredPost={featuredPost}
       className="grid grid-cols-2 space-y-2 rounded-lg w-full shadow"
     >
       <XImage
@@ -106,17 +111,20 @@ function CardFull(post: FeaturedPost) {
         </h2>
 
         <p className="text-lg tracking-tight leading-6 my-2">
-          {post.body.slice(0, 240)}...
+          {post.body?.slice(0, 240)}...
         </p>
       </div>
     </Wrapper>
   )
 }
 
-function CardHalfL(post: FeaturedPost) {
+function CardHalfL(featuredPost: IFeaturedPost) {
+  const { post } = featuredPost
+  if (!post) return null
+
   return (
     <Wrapper
-      post={post}
+      featuredPost={featuredPost}
       className="grid grid-cols-2 space-y-2 rounded-lg w-full shadow"
     >
       <XImage
@@ -137,10 +145,13 @@ function CardHalfL(post: FeaturedPost) {
   )
 }
 
-function CardHalfR(post: FeaturedPost) {
+function CardHalfR(featuredPost: IFeaturedPost) {
+  const { post } = featuredPost
+  if (!post) return null
+
   return (
     <Wrapper
-      post={post}
+      featuredPost={featuredPost}
       className="grid grid-cols-2 space-y-2 rounded-lg w-full shadow"
     >
       <div className="p-4">
@@ -161,10 +172,12 @@ function CardHalfR(post: FeaturedPost) {
   )
 }
 
-function CardHalfT(post: FeaturedPost) {
+function CardHalfT(featuredPost: IFeaturedPost) {
+  const { post } = featuredPost
+  if (!post) return null
   return (
     <Wrapper
-      post={post}
+      featuredPost={featuredPost}
       className="group flex flex-col space-y-2 rounded-lg border shadow "
     >
       <XImage
@@ -185,8 +198,8 @@ function CardHalfT(post: FeaturedPost) {
   )
 }
 
-export default function FeaturedFeedX({ posts }: { posts: FeaturedPost[] }) {
-  const { data } = useSWR<FeaturedPost[]>("/api/featured", fetcher, {
+export default function FeaturedFeedX({ posts }: { posts: IFeaturedPost[] }) {
+  const { data } = useSWR<IFeaturedPost[]>("/api/featured", fetcher, {
     fallbackData: posts,
   })
 
@@ -205,12 +218,12 @@ export default function FeaturedFeedX({ posts }: { posts: FeaturedPost[] }) {
           {data!
             .filter((el) => !el.hidden)
             .slice(1, 3)
-            .map((el: any) => (
+            .map((el) => (
               <CardHalfL {...el} />
             ))}
         </div>
         <div className="grid grid-cols-2">
-          {showed.slice(3, 5).map((el: any) => (
+          {showed.slice(3, 5).map((el) => (
             <CardHalfR {...el} />
           ))}
         </div>
