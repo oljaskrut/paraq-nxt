@@ -4,6 +4,7 @@ import Feed from "@/components/Feed"
 
 import { prisma } from "@/lib/prisma"
 import FeaturedFeedRest from "@/components/FeaturedFeedRest"
+import { todayDate } from "@/lib/dayjs"
 
 export default async function Home() {
   const featuredPosts = await prisma.featuredPost.findMany({
@@ -17,9 +18,24 @@ export default async function Home() {
     },
   })
 
+  const rfeed = await prisma.feed.findMany({
+    take: 6,
+    orderBy: { length: "desc" },
+    where: {
+      date: {
+        gte: todayDate(),
+      },
+    },
+  })
+
   const feed = await prisma.feed.findMany({
     take: 20,
     orderBy: { date: "desc" },
+    where: {
+      id: {
+        notIn: rfeed.map((f) => f.id),
+      },
+    },
   })
 
   return (
@@ -39,7 +55,12 @@ export default async function Home() {
       <hr className="my-8" />
 
       <h1 className="text-2xl font-bold leading-tight tracking-tighter md:text-4xl mb-2">
-        Последние новости
+        Резонансные новости
+      </h1>
+      <Feed feed={rfeed} />
+
+      <h1 className="text-2xl font-bold leading-tight tracking-tighter md:text-4xl mb-2">
+        Все новости
       </h1>
       <Feed feed={feed} />
     </main>

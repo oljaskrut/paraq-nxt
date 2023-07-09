@@ -2,6 +2,7 @@ import XImage from "@/components/x-image"
 import { formatDate } from "@/lib/dayjs"
 import { prisma } from "@/lib/prisma"
 import { formatTimeToNow } from "@/lib/utils"
+import Link from "next/link"
 import { notFound } from "next/navigation"
 
 export default async function Page({ params }: { params: { id: string } }) {
@@ -45,9 +46,13 @@ export default async function Page({ params }: { params: { id: string } }) {
                 !["/News/Local News", "/News/Other"].includes(category.name),
             )
             .map(({ category: { short_, name } }) => (
-              <span key={post.id + "_" + name} className="text-slate-400">
+              <Link
+                href={`/category${encodeURI(name)}`}
+                key={post.id + "_" + name}
+                className="text-slate-400"
+              >
                 #{short_}{" "}
-              </span>
+              </Link>
             ))}
         </div>
       </div>
