@@ -66,9 +66,3 @@ export const fetcher = <T>(
   input: RequestInfo | URL,
   init?: RequestInit | undefined,
 ): Promise<T> => fetch(input, init).then((res) => res.json())
-
-export const sfetcher = <T>(
-  input: RequestInfo | URL,
-  init?: RequestInit | undefined,
-): Promise<T> =>
-  fetch(env.NEXT_PUBLIC_APP_URL + input, init).then((res) => res.json())
