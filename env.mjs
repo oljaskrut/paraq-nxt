@@ -11,6 +11,7 @@ export const env = createEnv({
   },
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
+    NEXT_PUBLIC_APP_URL: z.string().url(),
   },
   runtimeEnv: {
     NODE_ENV: process.env["NODE_ENV"],
@@ -20,5 +21,6 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     PINECONE_API_KEY: process.env.PINECONE_API_KEY,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },
 })

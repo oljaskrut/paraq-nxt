@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { formatDistanceToNowStrict, subHours } from "date-fns"
 import locale from "date-fns/locale/en-US"
+import { env } from "@/env.mjs"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -69,4 +70,5 @@ export const fetcher = <T>(
 export const sfetcher = <T>(
   input: RequestInfo | URL,
   init?: RequestInit | undefined,
-): Promise<T> => fetch(absoluteUrl(input), init).then((res) => res.json())
+): Promise<T> =>
+  fetch(env.NEXT_PUBLIC_APP_URL + input, init).then((res) => res.json())
