@@ -55,7 +55,7 @@ export function formatTimeToNow(date: Date): string {
   })
 }
 
-export function absoluteUrl(path: string) {
+export function absoluteUrl(path: RequestInfo | URL) {
   return process.env.NODE_ENV === "production"
     ? path
     : `${process.env.NEXT_PUBLIC_APP_URL}${path}`
@@ -65,3 +65,8 @@ export const fetcher = <T>(
   input: RequestInfo | URL,
   init?: RequestInit | undefined,
 ): Promise<T> => fetch(input, init).then((res) => res.json())
+
+export const sfetcher = <T>(
+  input: RequestInfo | URL,
+  init?: RequestInit | undefined,
+): Promise<T> => fetch(absoluteUrl(input), init).then((res) => res.json())

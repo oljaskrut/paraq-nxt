@@ -13,7 +13,7 @@ export default function XImage({
 
   return (
     <Image
-      src={error || !url ? "/placeholder.webp" : url}
+      src={error ? "/blur.webp" : url.length === 0 ? "/placeholder.webp" : url}
       onError={() => setError(true)}
       placeholder="blur"
       blurDataURL="/blur.webp"

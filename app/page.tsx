@@ -1,10 +1,5 @@
-// import FeaturedFeed from "@/components/FeaturedFeed"
-// import RecentFeed from "@/components/RecentFeed"
 import Feed from "@/components/Feed"
-
-import { prisma } from "@/lib/prisma"
-// import FeaturedFeedRest from "@/components/FeaturedFeedRest"
-import { todayDate } from "@/lib/dayjs"
+import FeedAll from "@/components/FeedAll"
 
 export default async function Home() {
   // const featuredPosts = await prisma.featuredPost.findMany({
@@ -18,25 +13,15 @@ export default async function Home() {
   //   },
   // })
 
-  const rfeed = await prisma.feed.findMany({
-    take: 6,
-    orderBy: { length: "desc" },
-    where: {
-      date: {
-        gte: todayDate(),
-      },
-    },
-  })
-
-  const feed = await prisma.feed.findMany({
-    take: 20,
-    orderBy: { date: "desc" },
-    where: {
-      id: {
-        notIn: rfeed.map((f: any) => f.id),
-      },
-    },
-  })
+  // const rfeed = await prisma.feed.findMany({
+  //   take: 6,
+  //   orderBy: { length: "desc" },
+  //   where: {
+  //     date: {
+  //       gte: todayDate(),
+  //     },
+  //   },
+  // })
 
   return (
     <main className="md:container grid items-center gap-6 md:pb-4 pt-6">
@@ -57,12 +42,12 @@ export default async function Home() {
       <h1 className="text-2xl font-bold leading-tight tracking-tighter md:text-4xl mb-2">
         Главные новости
       </h1>
-      <Feed feed={rfeed} />
+      <Feed />
 
       <h1 className="text-2xl font-bold leading-tight tracking-tighter md:text-4xl mb-2">
         Все новости
       </h1>
-      <Feed feed={feed} />
+      <FeedAll />
     </main>
   )
 }

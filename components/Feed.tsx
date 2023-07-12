@@ -1,9 +1,13 @@
 import { Feed } from "@prisma/client"
 import XImage from "@/components/x-image"
-import { cn, formatTimeToNow } from "@/lib/utils"
+import { cn, formatTimeToNow, sfetcher } from "@/lib/utils"
 import Link from "next/link"
+import { formatTime } from "@/lib/dayjs"
 
-export default function Feed({ feed }: { feed: Feed[] }) {
+export default async function Feed() {
+  const feed = (await sfetcher("/api/feed", {
+    next: { revalidate: 60 },
+  })) as Feed[]
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {feed.map((item) => (
@@ -23,7 +27,7 @@ export default function Feed({ feed }: { feed: Feed[] }) {
             <div className="flex justify-between text-sm text-muted-foreground px-2">
               <span>{item.source}</span>
 
-              <span>{formatTimeToNow(item.date)}</span>
+              <span>{formatTime(item.date)}</span>
             </div>
 
             <div className="flex flex-col items-end justify-between">
