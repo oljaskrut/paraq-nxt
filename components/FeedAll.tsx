@@ -1,13 +1,20 @@
 import { Feed } from "@prisma/client"
 import XImage from "@/components/x-image"
-import { cn, formatTimeToNow, sfetcher } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { formatTime } from "@/lib/dayjs"
+import { prisma } from "@/lib/prisma"
 
 export default async function FeedAll() {
-  const feed = (await sfetcher("/api/feed/all", {
-    next: { revalidate: 60 },
-  })) as Feed[]
+  // const feed = (await sfetcher("/api/feed/all", {
+  //   next: { revalidate: 60 },
+  // })) as Feed[]
+
+  const feed = await prisma.feed.findMany({
+    take: 20,
+    orderBy: { date: "desc" },
+  })
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {feed.map((item) => (
