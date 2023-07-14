@@ -29,8 +29,9 @@ export async function POST(req: Request) {
       {
         role: "system",
         content:
-          "You are journalist, given semantically similar news articles, Give concise, summarized, relevant, true answer in plain russian text, with maximum of 240 words. Mention source and date if relevant Articles in JSON format: " +
-          JSON.stringify(res),
+          "You are journalist, given semantically similar news articles, Give concise, summarized, relevant, true answer in plain russian text. Mention source and date if relevant. Articles in JSON format: " +
+          JSON.stringify(res) +
+          "\n",
       },
 
       { role: "user", content: prompt },
