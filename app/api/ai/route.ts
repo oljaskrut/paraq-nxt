@@ -7,7 +7,7 @@ export async function POST(request: Request) {
     const res = await bigQ(search, 4)
     const [ans, cost] = await answer(
       search,
-      res.map(({ body, hash, image, id, feedId, hidden, ...el }) => ({
+      res.map(({ body, hash, ...el }) => ({
         ...el,
         body: body?.slice(0, 2400),
       })),

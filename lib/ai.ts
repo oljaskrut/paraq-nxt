@@ -85,7 +85,7 @@ export async function embed(body: string) {
       input: body,
     })
 
-    console.log("m$", ((data.usage?.prompt_tokens ?? 0) * 0.0001).toFixed(2))
+    // console.log("m$", ((data.usage?.prompt_tokens ?? 0) * 0.0001).toFixed(2))
 
     return data.data[0].embedding
   } catch (error: any) {
@@ -134,6 +134,13 @@ export async function bigQ(input: string, take = 5) {
   const posts = await prisma.post.findMany({
     where: { hash: { in: data.map((el) => el.id) } },
     orderBy: { date: "desc" },
+    select: {
+      hash: true,
+      body: true,
+      source: true,
+      date: true,
+      link: true,
+    },
   })
 
   const rat = data.map(({ id, score }) => ({
