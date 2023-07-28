@@ -82,7 +82,6 @@ export default function FeedAllX({ feed }: { feed: Feed[] }) {
   const { data, mutate, isLoading, setSize, size, isValidating } =
     useSWRInfinite<Feed[]>(
       (pageIndex, previousPageData) => {
-        console.log({ pageIndex, previousPageData })
         if (pageIndex === 0) return `/api/feed`
         return `/api/feed?cursor=${previousPageData.at(-1).hash}&limit=10`
       },
@@ -93,7 +92,6 @@ export default function FeedAllX({ feed }: { feed: Feed[] }) {
       },
     )
 
-  console.log({ size })
   return (
     <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -118,7 +116,7 @@ export default function FeedAllX({ feed }: { feed: Feed[] }) {
                 <div className="flex justify-between text-sm text-muted-foreground px-2">
                   <span>{item.source}</span>
 
-                  <span>who cares</span>
+                  <span>{formatTime(item.date)}</span>
                 </div>
 
                 <div className="flex flex-col items-end justify-between">
