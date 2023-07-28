@@ -70,4 +70,5 @@ model Feed {
   length    Int
   set       Post[]   @relation("FeedSet")
   createdAt DateTime @default(now())
+  hidden    Boolean?
 }

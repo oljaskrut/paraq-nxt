@@ -1,4 +1,3 @@
-import FeaturedFeedX from "@/components/FeaturedFeedX"
 import FeedAllX from "@/components/FeedAllX"
 import { prisma } from "@/lib/prisma"
 
