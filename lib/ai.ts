@@ -150,3 +150,18 @@ export async function bigQ(input: string, take = 5) {
 
   return rat
 }
+
+export async function bigQ2(input: string, take = 20) {
+  const data = await query(input, take)
+  const posts = await prisma.post.findMany({
+    where: { hash: { in: data.map((el) => el.id) } },
+    orderBy: { date: "desc" },
+  })
+
+  const rat = posts.map((el) => ({
+    ...el,
+    score: data.find((l) => l.id === el.hash)?.score ?? 0,
+  }))
+
+  return rat
+}
