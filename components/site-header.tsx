@@ -1,13 +1,9 @@
 import Link from "next/link"
-import { SignInButton, auth } from "@clerk/nextjs"
 import { siteConfig } from "@/config/site"
 import { Icons } from "@/components/icons"
-import { ThemeToggle } from "@/components/theme-toggle"
 import { UserButton } from "@clerk/nextjs"
-import { Button } from "./ui/button"
 
 export function SiteHeader() {
-  const { userId } = auth()
   return (
     <header className="bg-background sticky top-0 z-40 w-full border-b">
       <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
@@ -36,13 +32,7 @@ export function SiteHeader() {
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-1">
             {/* <ThemeToggle /> */}
-            {userId ? (
-              <UserButton afterSignOutUrl="/" />
-            ) : (
-              <Button>
-                <SignInButton mode="modal" />
-              </Button>
-            )}
+            <UserButton afterSignOutUrl="/" />
           </nav>
         </div>
       </div>
