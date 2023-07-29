@@ -9,8 +9,25 @@ dayjs.extend(isToday)
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
+function ddd() {
+  return process.env.NODE_ENV === "production"
+    ? dayjs()
+    : dayjs().add(6, "hours")
+}
+
+export function thisMonth() {
+  return ddd().subtract(1, "month").toDate()
+}
+export function thisWeek() {
+  return ddd().subtract(1, "week").toDate()
+}
+
 export function todayDate() {
-  return dayjs().subtract(18, "hours").toDate()
+  return ddd().subtract(24, "hours").toDate()
+}
+
+export function formatDateX(date: Date) {
+  return dayjs(date).format("YYYY-MM-DD HH:mm")
 }
 
 export function formatDate(date: Date) {

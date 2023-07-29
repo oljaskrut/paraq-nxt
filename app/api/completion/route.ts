@@ -25,6 +25,8 @@ export async function POST(req: Request) {
     model: "gpt-3.5-turbo",
     stream: true,
     temperature: 0.33,
+    stop: ".\n\n",
+    max_tokens: 1024,
     messages: [
       {
         role: "system",
